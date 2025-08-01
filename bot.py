@@ -1,20 +1,28 @@
-import os
-from aiogram import Bot, Dispatcher, types, executor
+import asyncio
+import logging
+from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message
+from aiogram.client.default import DefaultBotProperties
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-ADMINS = os.getenv("ADMINS", "").split(",")
+ADMIN_ID = os.getenv("ADMIN_ID")
 
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher(bot)
+# Устанавливаем логирование
+logging.basicConfig(level=logging.INFO)
 
-@dp.message_handler(commands=["start"])
-async def start(message: Message):
-    await message.answer("Привет! Это Контент‑бот. Готов к работе 💼")
+bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
+dp = Dispatcher()
 
-@dp.message_handler(commands=["help"])
-async def help_cmd(message: Message):
-    await message.answer("Здесь ты сможешь зарабатывать на файлах. Загрузи PDF — и получи ссылку для скачивания 💸")
+@dp.message()
+async def handle_message(message: Message):
+    await message.answer("Привет! Это Контент-бот. Зарабатывай на файлах 📁")
+
+async def main():
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    executor.start_polling(dp)
+    asyncio.run(main())
